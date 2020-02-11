@@ -13,6 +13,18 @@ GameOn::GameOn(QWidget *parent)
     noughtwin = 0;
     crosswin = 0;
 
+    //Creates Blank Pixmap with transparent background
+    blank= QPixmap(64,64);
+    blank.fill(Qt::transparent);
+
+    //Loads nought and cross png files into Pixmap objects
+    n = QPixmap("D:\\Metix\\noughcross\\nought-01.png");
+    c = QPixmap("D:\\Metix\\noughcross\\cross-01.png");
+
+    //create widgets to contain main and game screen
+    mainscreen = new QWidget(this);
+    gamescreen = new QWidget(this);
+
     showHome();
     buildGameLayout();
 //    //Initialise 0 wins for both players
@@ -132,15 +144,6 @@ GameOn::~GameOn()
 
 void GameOn::showHome()
 {
-
-    //Loads nought and cross png files into Pixmap objects
-    n = QPixmap("D:\\Metix\\noughcross\\nought-01.png");
-    c = QPixmap("D:\\Metix\\noughcross\\cross-01.png");
-
-    //create widgets to contain main and game screen
-    mainscreen = new QWidget(this);
-    gamescreen = new QWidget(this);
-
     //Set background colour using style sheet
     setStyleSheet("QWidget {"
                   "background-color : rgb(49,49,49);"
@@ -366,10 +369,6 @@ void GameOn::buildGameLayout()
     const QString right_border = QString("border-right: 1px solid white;");
     const QString top_border = QString("border-top: 1px solid white;");
 
-    //blank Pixmap with transparent fill
-    QPixmap blank = QPixmap(64,64);
-    blank.fill(Qt::transparent);
-
     //for every panel in the grid get coordinates and initialise
     for (int i = 0;i<9; i++)
     {
@@ -447,22 +446,6 @@ void GameOn::startgame()
     gamescreen->show();
     t=n_t;
     won=-1;
-    while(won<0)
-    {
-
-    }
-    switch(won)
-    {
-        case 0:
-            turn->setText("it's a draw!");
-            break;
-        case 1:
-            turn->setText("noughts won!");
-            break;
-        case 2:
-            turn->setText("crosses won!");
-            break;
-    }
 }
 
 void GameOn::updateturn(QString S)
@@ -489,12 +472,12 @@ void GameOn::gridClick(int p)
         t=n_t;
     }
     QObject::disconnect(grid[x][y],SIGNAL(clicked(int)),this,SLOT(gridClick(int)));
-    won = checkWin(p);
+    clicks++;
+    checkWin();
 }
 
-int GameOn::checkWin(int p)
+void GameOn::checkWin()
 {
-    WinCon val;
     uint16_t check;
     uint16_t win_state[8] = {0xE000,0x1C00,0x0380,0x9200,0x7900,0x2780,0x8880,0x2A00};
 
@@ -505,57 +488,68 @@ int GameOn::checkWin(int p)
     if(t==c_t)
     {
         check = nstate;
-        val = n_w;
     }
     else
     {
         check = cstate;
-        val = c_w;
     }
+
 
     for (int i=0;i<9;i++)
     {
         check &= win_state[i];
-        if (check == win_state[1])
+        if (check == win_state[i])
         {
-            return val;
+
+            if(t==c_t)
+            {
+                turn->setText("noughts won!");
+            }
+            else
+            {
+                turn->setText("crosses won!");
+            }
         }
     }
-    return -1;
+    if(clicks>=9)
+    {
+        turn->setText("it's a draw!");
+    }
+
 }
+
 
 void GameOn::back_click()
 {
-    QString *nresult = new QString("n:");
-    QString *cresult = new QString("c:");
-    for (int i=0;i<9;i++)
-    {
-        uint16_t check = nstate & bit[i];
-        if(check>0)
-        {
-            nresult->append(QString::number(i) + ",");
-        }
-        check = cstate & bit[i];
-        if(check>0)
-        {
-            cresult->append(QString::number(i) + ",");
-        }
-    }
-    turn->setText(*nresult + *cresult);
+//    QString *nresult = new QString("n:");
+//    QString *cresult = new QString("c:");
+//    for (int i=0;i<9;i++)
+//    {
+//        uint16_t check = nstate & bit[i];
+//        if(check>0)
+//        {
+//            nresult->append(QString::number(i) + ",");
+//        }
+//        check = cstate & bit[i];
+//        if(check>0)
+//        {
+//            cresult->append(QString::number(i) + ",");
+//        }
+//    }
+//    turn->setText(*nresult + *cresult);
 
     //Initialise 0 wins for both players
     noughtwin = 0;
     crosswin = 0;
 
-    //gamescreen->hide();
-    //mainscreen->show();
+    newg_click();
+
+    gamescreen->hide();
+    mainscreen->show();
 }
 
 void GameOn::newg_click()
 {
-    //blank Pixmap with transparent fill
-    QPixmap blank = QPixmap(64,64);
-    blank.fill(Qt::transparent);
     for (int i = 0;i<9; i++)
     {
         //x and y coordinates
@@ -569,6 +563,7 @@ void GameOn::newg_click()
     }
     nstate &= 0x00;
     t=n_t;
+    clicks=0;
 }
 
 

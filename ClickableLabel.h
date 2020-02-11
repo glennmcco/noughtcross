@@ -20,7 +20,6 @@ public:
     explicit ClickableLabel(QWidget* parent = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags());
     ~ClickableLabel();
     void setPanel(int p);
-    bool isclaimed();
 
 signals:
     void clicked(int p);
@@ -29,8 +28,7 @@ protected:
     void mousePressEvent(QMouseEvent* event);
 
 private:
-    int panel;
-    WinCon claimedby;
+    uint8_t panel;
 
 };
 

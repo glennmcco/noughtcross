@@ -13,7 +13,6 @@
 class ClickableLabel;
 
 enum Turn {n_t= 0, c_t = 1};
-enum WinCon {n_w=1, d_w=0, c_w=2};
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class GameOn; }
@@ -35,7 +34,8 @@ private:
     int noughtwin;
     int crosswin;
     Turn t;
-    int won;
+    uint8_t won;
+    uint8_t clicks;
 
     //Win Condition Check values
     uint16_t bit[9] = {0x8000,0x4000,0x2000,0x1000,0x0800,0x0400,0x0200,0x0100,0x0080};
@@ -60,6 +60,7 @@ private:
     QLabel *turn;
     QPixmap n;
     QPixmap c;
+    QPixmap blank;
     ClickableLabel *grid[3][3];
 
     //Layouts for home screen and game screen
@@ -73,7 +74,7 @@ private:
     QPushButton *newg;
 
     //game methods
-    int checkWin(int p);
+    void checkWin();
     void buildGameLayout();
     void updateTurn();
     void showHome();

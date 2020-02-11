@@ -17,13 +17,11 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     ClickableLabel.cpp \
-    gamelogic.cpp \
     main.cpp \
     gameon.cpp
 
 HEADERS += \
     ClickableLabel.h \
-    gamelogic.h \
     gameon.h
 
 FORMS += \
