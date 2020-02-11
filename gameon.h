@@ -10,6 +10,7 @@
 
 //#include "gamelogic.h"
 
+class ClickableLabel;
 
 enum Turn {n_t= 0, c_t = 1};
 enum WinCon {n_w=1, d_w=0, c_w=2};
@@ -30,13 +31,18 @@ public:
 private:
     Ui::GameOn *ui;
 
-    //static integers to track state
+    //variables to track game state
     int noughtwin;
     int crosswin;
     Turn t;
     int won;
-    bool nstate[9]={0,0,0,0,0,0,0,0,0};
-    bool cstate[9]={0,0,0,0,0,0,0,0,0};
+
+    //Win Condition Check values
+    uint16_t bit[9] = {0x8000,0x4000,0x2000,0x1000,0x0800,0x0400,0x0200,0x0100,0x0080};
+
+    //gamestate flags
+    uint16_t nstate=0;
+    uint16_t cstate=0;
 //    GameLogic *GL;
 
     //variables for title screen
@@ -54,6 +60,7 @@ private:
     QLabel *turn;
     QPixmap n;
     QPixmap c;
+    ClickableLabel *grid[3][3];
 
     //Layouts for home screen and game screen
     QVBoxLayout *home;

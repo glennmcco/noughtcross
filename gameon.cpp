@@ -3,14 +3,18 @@
 #include "gameon.h"
 #include "ui_gameon.h"
 
-ClickableLabel *grid[3][3];
-
 GameOn::GameOn(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::GameOn)
 {
     ui->setupUi(this);
+
+    //Initialise 0 wins for both players
+    noughtwin = 0;
+    crosswin = 0;
+
     showHome();
+    buildGameLayout();
 //    //Initialise 0 wins for both players
 //    noughtwin = 0;
 //    crosswin = 0;
@@ -27,9 +31,9 @@ GameOn::GameOn(QWidget *parent)
 //    setStyleSheet("QWidget {"
 //                  "background-color : rgb(49,49,49);"
 //                  "}");
-////    gamescreen->setStyleSheet("QWidget {"
-////                              "background-color : red;"
-////                              "}");
+//    gamescreen->setStyleSheet("QWidget {"
+//                              "background-color : red;"
+//                              "}");
 
 //    //----initiate elements for the main screen-----
 
@@ -128,9 +132,6 @@ GameOn::~GameOn()
 
 void GameOn::showHome()
 {
-    //Initialise 0 wins for both players
-    noughtwin = 0;
-    crosswin = 0;
 
     //Loads nought and cross png files into Pixmap objects
     n = QPixmap("D:\\Metix\\noughcross\\nought-01.png");
@@ -235,58 +236,19 @@ void GameOn::showHome()
     mainscreen->setLayout(home);
     gamescreen->hide();
 }
-void GameOn::startgame()
-{
-    mainscreen->hide();
-    //GL = new GameLogic();
-    //GL->setWindow(this);
-    buildGameLayout();
-    t=n_t;
-    while(won<0)
-    {
 
-    }
-    switch(won)
-    {
-        case 0:
-            turn->setText("it's a draw!");
-            break;
-        case 1:
-            turn->setText("noughts won!");
-            break;
-        case 2:
-            turn->setText("crosses won!");
-            break;
-    }
-
-//    Turn T = n_t;
-//    int winner = 0;
-//    while(winner!=2)
-//    {
-//        int winner = takeTurn(T);
-
-//        switch (winner)
-//        {
-//        case -1:
-//            noughtwin++;
-//            break;
-//        case 0:
-//            break;
-//        case 1:
-//            crosswin++;
-//        break;
-//        }
-//    }
-}
 
 void GameOn::buildGameLayout()
 {
-    //
+    /*---------------------Elements for Building gamescreen----------------------------------------*/
+
+    /*A small nought icon and text label to display number of noughts games won*/
     QLabel *smalln = new QLabel();
     //smalln->setPixmap(GL->getnought().scaled(23,23,Qt::KeepAspectRatio,Qt::SmoothTransformation));
     smalln->setPixmap(n.scaled(23,23,Qt::KeepAspectRatio,Qt::SmoothTransformation));
     nscore = new QLabel("Noughts score: " + QString::number(noughtwin));
 
+    //Sets background colour and border to transparent and font style
     nscore->setStyleSheet("background-color: rgba(0,0,0,0%);"
                           "color : rgb(255,255,255); "
                           "font: 21pt \"Roboto Condensed\";"
@@ -294,13 +256,13 @@ void GameOn::buildGameLayout()
                           "border-color: rgba(0,0,0,0%)"
                            );
 
-
-
+    /*A small cross icon and text label to display number of noughts games won*/
     QLabel *smallc = new QLabel();
     //smallc->setPixmap(GL->getcross().scaled(23,23,Qt::KeepAspectRatio,Qt::SmoothTransformation));
     smallc->setPixmap(c.scaled(23,23,Qt::KeepAspectRatio,Qt::SmoothTransformation));
     cscore = new QLabel("Crosses score: "+ QString::number(crosswin));
 
+    //Sets background colour and border to transparent and font style
     cscore->setStyleSheet("background-color: rgba(0,0,0,0%);"
                           "color : rgb(255,255,255); "
                           "font: 21pt \"Roboto Condensed\";"
@@ -308,7 +270,10 @@ void GameOn::buildGameLayout()
                           "border-color: rgba(0,0,0,0%)"
                           );
 
+     /*text label to display win state or current turn*/
     turn = new QLabel("noughts turn!");
+
+    //Sets background colour and border to transparent and font style
     turn->setStyleSheet("background-color: rgba(0,0,0,0%);"
                         "color : rgb(255,255,255); "
                         "font: 31pt \"Roboto Condensed\";"
@@ -316,15 +281,50 @@ void GameOn::buildGameLayout()
                         );
     turn->setAlignment(Qt::AlignCenter);
 
-    //widgets for gamescreen layouts
-    //QWidget *gamescreen = new QWidget();
+    /*--------------------Create Buttons for back to mainscreen and new game-----------------------------*/
+    //Creates and styles a white line roundbox pushbutton Back
+    back  = new QPushButton("Back");
+    back->setStyleSheet("QPushButton{"
+                         "background-color : rgb(49,49,49);"
+                         "border-radius : 31px;"
+                         "border : 1px solid white;"
+                         "color : rgb(255,255,255);"
+                         "font: 18pt \"Roboto Condensed\";"
+                         "font-weight : bold;"
+                         "}");
+    back->setFixedHeight(62);
+
+    //connects back PushButton clicked SIGNAL() to back_click handler SLOT() in GameOn
+    QObject::connect(back,SIGNAL(clicked()),this,SLOT(back_click()));
+
+    //Creates and styles a white filled roundbox pushbutton New game
+    newg  = new QPushButton("New game");
+    newg->setStyleSheet("QPushButton{"
+                         "background-color : rgb(255,255,255);"
+                         "border-radius : 31px;"
+                         "color : rgb(49,49,49);"
+                         "font: 18pt \"Roboto Condensed\";"
+                         "font-weight : bold;"
+                         "}");
+    newg->setFixedHeight(62);
+
+    //connects newg PushButton clicked() SIGNAL() to newg_click() handler SLOT() in GameOn
+    QObject::connect(newg,SIGNAL(clicked()),this,SLOT(newg_click()));
+
+    /*---------------------Widgets for gamescreen layouts----------------------------------------*/
+    //Score screen labels
     QWidget *scores = new QWidget(gamescreen);
     QWidget *scoren = new QWidget(scores);
     QWidget *scorec = new QWidget(scores);
+
+    //Game board
     QWidget *gamebox = new QWidget(gamescreen);
     QWidget *gridwid = new QWidget(gamebox);
+
+    //Button Controls
     QWidget *buttons = new QWidget(gamescreen);
 
+    /*--------------------Specifying Layouts for gamescreen widgets-----------------------------*/
     //Horizontal Box Layout for noughts score
     QHBoxLayout *nl = new QHBoxLayout;
     nl->addWidget(smalln);
@@ -348,26 +348,40 @@ void GameOn::buildGameLayout()
                           "border-bottom: 1px solid white;"
                           "border-radius: 0px");
 
-    //initialise empty QPixmap labels and add to gamegrid
+    QHBoxLayout *bl = new QHBoxLayout;
+    bl->addWidget(back);
+    bl->addWidget(newg);
+    buttons->setLayout(bl);
+
+    /*--------------------Create Gamegrid out of QPixMap Labels-----------------------------*/
+    //create and align QGrid Layout for gameplay
     gamegrid = new QGridLayout(gridwid);
     gamegrid->setAlignment(Qt::AlignCenter);
     gamegrid->setSpacing(0);
-
-    QString bottom_border = QString("border-bottom: 1px solid white;");
-    QString left_border = QString("border-left: 1px solid white;");
-    QString right_border = QString("border-right: 1px solid white;");
-    QString top_border = QString("border-top: 1px solid white;");
-    //ClickableLabel *grid[3][3];
     gridwid->setStyleSheet("border-color: rgba(0,0,0,0%);");
+
+    //String Constants for setting borders in stylesheets
+    const QString bottom_border = QString("border-bottom: 1px solid white;");
+    const QString left_border = QString("border-left: 1px solid white;");
+    const QString right_border = QString("border-right: 1px solid white;");
+    const QString top_border = QString("border-top: 1px solid white;");
+
+    //blank Pixmap with transparent fill
     QPixmap blank = QPixmap(64,64);
     blank.fill(Qt::transparent);
 
+    //for every panel in the grid get coordinates and initialise
     for (int i = 0;i<9; i++)
     {
+        //x and y coordinates
         int x = i/3;
         int y = i%3;
+
+        //StyleSheet String base with padding and square border corners
         QString ss = "padding: 28px;"
                      "border-radius: 0px;";
+
+        //add appropriate border string constants
         if(x < 2){
             ss = (ss + bottom_border);
             if(x > 0){
@@ -380,18 +394,23 @@ void GameOn::buildGameLayout()
                 ss = (ss + left_border);
             }
         }
+
+        //Create each panel as a new styles ClickableLabel marking its position with setPanel(i)
         grid[x][y] = new ClickableLabel();
-        grid[x][y]->setPixmap(blank);
         grid[x][y]->setStyleSheet(ss);
         grid[x][y]->setPanel(i);
+        //Set panel at (x,y) to transparent QPixmap blank
+       // grid[x][y]->setPixmap(blank);
 
-        //turn->setText(ss);
+        //add the panel to the gamegrid layout at (x,y)
         gamegrid->addWidget(grid[x][y],x,y);
-        QObject::connect(grid[x][y],SIGNAL(clicked(int)),this,SLOT(gridClick(int)));
+
+        //Connect ClickableLabel clicked(int) SIGNAL() to gridClick(int) SLOT() handler in GameOn
+        //QObject::connect(grid[x][y],SIGNAL(clicked(int)),this,SLOT(gridClick(int)));
         //QObject::connect(grid[x][y],SIGNAL(clicked()),this,SLOT());
     }
+    //set grid widget to the grid layout
     gridwid->setLayout(gamegrid);
-
 
     //Vertical Box Layout for the gameplay
     QVBoxLayout *gl = new QVBoxLayout;
@@ -407,43 +426,7 @@ void GameOn::buildGameLayout()
     gamebox->setStyleSheet("border: 1px solid white;"
                            "border-radius: 31;"
                            "margin: 0px;");
-
-    //Creates a white roundbox pushbutton using style sheet
-    back  = new QPushButton("Back");
-    back->setStyleSheet("QPushButton{"
-                         "background-color : rgb(49,49,49);"
-                         "border-radius : 31px;"
-                         "border : 1px solid white;"
-                         "color : rgb(255,255,255);"
-                         "font: 18pt \"Roboto Condensed\";"
-                         "font-weight : bold;"
-                         "}");
-
-    //set the height of the button to 62
-    back->setFixedHeight(62);
-    QObject::connect(back,SIGNAL(clicked()),this,SLOT(back_click()));
-
-    //Creates a white roundbox pushbutton using style sheet
-    newg  = new QPushButton("New game");
-    newg->setStyleSheet("QPushButton{"
-                         "background-color : rgb(255,255,255);"
-                         "border-radius : 31px;"
-                         "color : rgb(49,49,49);"
-                         "font: 18pt \"Roboto Condensed\";"
-                         "font-weight : bold;"
-                         "}");
-
-    //set the height of the button to 62
-    newg->setFixedHeight(62);
-
-    //Connect Startgame button click to start game method
-    QObject::connect(newg,SIGNAL(clicked()),this,SLOT(newg_click()));
-
-    QHBoxLayout *bl = new QHBoxLayout;
-    bl->addWidget(back);
-    bl->addWidget(newg);
-    buttons->setLayout(bl);
-
+    newg_click();
     game = new QVBoxLayout;
     game->setAlignment(Qt::AlignCenter);
     game->setSpacing(0);
@@ -453,10 +436,33 @@ void GameOn::buildGameLayout()
     game->addWidget(buttons);
     game->addSpacing(78);
     gamescreen->setLayout(game);
-    gamescreen->show();
 
     //QObject::connect(gridwid,SIGNAL(clicked()),this->parent(),SLOT(gridClick()));
     //this->show();
+}
+
+void GameOn::startgame()
+{
+    mainscreen->hide();
+    gamescreen->show();
+    t=n_t;
+    won=-1;
+    while(won<0)
+    {
+
+    }
+    switch(won)
+    {
+        case 0:
+            turn->setText("it's a draw!");
+            break;
+        case 1:
+            turn->setText("noughts won!");
+            break;
+        case 2:
+            turn->setText("crosses won!");
+            break;
+    }
 }
 
 void GameOn::updateturn(QString S)
@@ -472,35 +478,97 @@ void GameOn::gridClick(int p)
     {
         grid[x][y]->setPixmap(n.scaled(64,64,Qt::KeepAspectRatio,Qt::SmoothTransformation));
         turn->setText("crosses turn!");
+        nstate^=bit[p];
         t=c_t;
     }
     else if(t==c_t)
     {
         grid[x][y]->setPixmap(c.scaled(64,64,Qt::KeepAspectRatio,Qt::SmoothTransformation));
         turn->setText("noughts turn!");
+        cstate^=bit[p];
         t=n_t;
     }
     QObject::disconnect(grid[x][y],SIGNAL(clicked(int)),this,SLOT(gridClick(int)));
-
+    won = checkWin(p);
 }
 
 int GameOn::checkWin(int p)
 {
-    int x = p/3;
-    int y = p%3;
-    bool[8][9]={0};
+    WinCon val;
+    uint16_t check;
+    uint16_t win_state[8] = {0xE000,0x1C00,0x0380,0x9200,0x7900,0x2780,0x8880,0x2A00};
+
+    /*win states    {0xE000,0x1C00,0x0380,0x9200,0x7900,0x2780,0x8880,0x2A00}
+     * Vertical     {{1,1,1,0,0,0,0,0},{0,0,0,1,1,1,0,0,0},{0,0,0,0,0,0,1,1,1},
+     * Horizontal   {1,0,0,1,0,0,1,0,0},{0,1,0,0,1,0,0,1,0},{0,0,1,0,0,1,0,0,1},
+     * Diagonal                         {1,0,0,0,1,0,0,0,1},{0,0,1,0,1,0,1,0,0}};*/
+    if(t==c_t)
+    {
+        check = nstate;
+        val = n_w;
+    }
+    else
+    {
+        check = cstate;
+        val = c_w;
+    }
+
+    for (int i=0;i<9;i++)
+    {
+        check &= win_state[i];
+        if (check == win_state[1])
+        {
+            return val;
+        }
+    }
     return -1;
 }
 
 void GameOn::back_click()
 {
-    gamescreen->hide();
-    mainscreen->show();
+    QString *nresult = new QString("n:");
+    QString *cresult = new QString("c:");
+    for (int i=0;i<9;i++)
+    {
+        uint16_t check = nstate & bit[i];
+        if(check>0)
+        {
+            nresult->append(QString::number(i) + ",");
+        }
+        check = cstate & bit[i];
+        if(check>0)
+        {
+            cresult->append(QString::number(i) + ",");
+        }
+    }
+    turn->setText(*nresult + *cresult);
+
+    //Initialise 0 wins for both players
+    noughtwin = 0;
+    crosswin = 0;
+
+    //gamescreen->hide();
+    //mainscreen->show();
 }
 
 void GameOn::newg_click()
 {
+    //blank Pixmap with transparent fill
+    QPixmap blank = QPixmap(64,64);
+    blank.fill(Qt::transparent);
+    for (int i = 0;i<9; i++)
+    {
+        //x and y coordinates
+        int x = i/3;
+        int y = i%3;
 
+        grid[x][y]->setPixmap(blank);
+
+        //Connect ClickableLabel clicked(int) SIGNAL() to gridClick(int) SLOT() handler in GameOn
+        QObject::connect(grid[x][y],SIGNAL(clicked(int)),this,SLOT(gridClick(int)));
+    }
+    nstate &= 0x00;
+    t=n_t;
 }
 
 

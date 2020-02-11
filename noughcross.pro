@@ -35,6 +35,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 DISTFILES += \
+    README.md \
     RobotoCondensed-Bold.ttf \
     RobotoCondensed-Regular.ttf \
     cross-01.png \
