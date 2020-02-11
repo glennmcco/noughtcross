@@ -330,28 +330,38 @@ void GameOn::buildGameLayout()
     /*--------------------Specifying Layouts for gamescreen widgets-----------------------------*/
     //Horizontal Box Layout for noughts score
     QHBoxLayout *nl = new QHBoxLayout;
+    nl->setSpacing(0);
     nl->addWidget(smalln);
     nl->addWidget(nscore);
     scoren->setLayout(nl);
-    scoren->setStyleSheet("border-color: rbga(0,0,0,0%);");
+    scoren->setStyleSheet("border-color: rbga(0,0,0,0%);"
+                          "margins: 0px;"
+                          );
 
     //Horizontal Box Layout for crosses score
     QHBoxLayout *cl = new QHBoxLayout;
+    cl->setSpacing(0);
     cl->addWidget(smallc);
     cl->addWidget(cscore);
     scorec->setLayout(cl);
-    scorec->setStyleSheet("border-color: rbga(0,0,0,0%);");
+    scorec->setStyleSheet("border-color: rbga(0,0,0,0%);"
+                          "margins: 0px;"
+                          );
 
     //Horizontal layout for whole score board
     QHBoxLayout *sl = new QHBoxLayout;
+    sl->setSpacing(0);
     sl->addWidget(scoren);
     sl->addWidget(scorec);
     scores->setLayout(sl);
     scores->setStyleSheet("border-color: rgba(0,0,0,0%);"
-                          "border-bottom: 1px solid white;"
-                          "border-radius: 0px");
+                          "border-bottom: 2px solid white;"
+                          "border-radius: 0px;"
+                          "margins: 0px;"
+                          );
 
     QHBoxLayout *bl = new QHBoxLayout;
+    bl->setSpacing(0);
     bl->addWidget(back);
     bl->addWidget(newg);
     buttons->setLayout(bl);
@@ -416,15 +426,19 @@ void GameOn::buildGameLayout()
     gl->setAlignment(Qt::AlignCenter);
     gl->setSpacing(0);
     gl->addWidget(scores);
-    gl->addSpacing(63);
+    gl->addSpacing(67);
     gl->addWidget(turn);
     gl->addSpacing(64);
     gl->addWidget(gridwid);
     gl->addSpacing(75);
+
+    //Set gamebox layout to gl and style
     gamebox->setLayout(gl);
-    gamebox->setStyleSheet("border: 1px solid white;"
-                           "border-radius: 31;"
-                           "margin: 0px;");
+    gamebox->setStyleSheet("border: 2px solid white;"
+                           "border-radius: 23px;"
+                           "margin: 0px;"
+                           "padding: 0px;"
+                           );
     newg_click();
     game = new QVBoxLayout;
     game->setAlignment(Qt::AlignCenter);
@@ -442,6 +456,8 @@ void GameOn::buildGameLayout()
 
 void GameOn::startgame()
 {
+    nscore->setText("Noughts score: " + QString::number(noughtwin));
+    cscore->setText("Crosses score: " + QString::number(crosswin));
     mainscreen->hide();
     gamescreen->show();
     t=n_t;
@@ -461,14 +477,14 @@ void GameOn::gridClick(int p)
     {
         grid[x][y]->setPixmap(n.scaled(64,64,Qt::KeepAspectRatio,Qt::SmoothTransformation));
         turn->setText("crosses turn!");
-        nstate^=bit[p];
+        nstate|=bit[p];
         t=c_t;
     }
     else if(t==c_t)
     {
         grid[x][y]->setPixmap(c.scaled(64,64,Qt::KeepAspectRatio,Qt::SmoothTransformation));
         turn->setText("noughts turn!");
-        cstate^=bit[p];
+        cstate|=bit[p];
         t=n_t;
     }
     QObject::disconnect(grid[x][y],SIGNAL(clicked(int)),this,SLOT(gridClick(int)));
@@ -478,36 +494,53 @@ void GameOn::gridClick(int p)
 
 void GameOn::checkWin()
 {
-    uint16_t check;
-    uint16_t win_state[8] = {0xE000,0x1C00,0x0380,0x9200,0x7900,0x2780,0x8880,0x2A00};
-
-    /*win states    {0xE000,0x1C00,0x0380,0x9200,0x7900,0x2780,0x8880,0x2A00}
-     * Horizontal     {{1,1,1,0,0,0,0,0},{0,0,0,1,1,1,0,0,0},{0,0,0,0,0,0,1,1,1},
-     * Vertial   {1,0,0,1,0,0,1,0,0},{0,1,0,0,1,0,0,1,0},{0,0,1,0,0,1,0,0,1},
+    uint16_t check=0;
+    uint16_t win_state[8] = {0xE000,0x1C00,0x0380,0x9200,0x7900,0x2480,0x8880,0x2A00};
+    //turn->setText(QString::number(nstate)+" v "+QString::number(cstate));
+    /*win states    {0xE000,0x1C00,0x0380,0x9200,0x7900,0x2480,0x8880,0x2A00}
+     * Horizontal   {{1,1,1,0,0,0,0,0},{0,0,0,1,1,1,0,0,0},{0,0,0,0,0,0,1,1,1},
+     * Vertial      {1,0,0,1,0,0,1,0,0},{0,1,0,0,1,0,0,1,0},{0,0,1,0,0,1,0,0,1},
      * Diagonal                         {1,0,0,0,1,0,0,0,1},{0,0,1,0,1,0,1,0,0}};*/
-    if(t==c_t)
-    {
-        check = nstate;
-    }
-    else
-    {
-        check = cstate;
-    }
+    if(t==c_t){check = nstate;}
+    else{check = cstate;}
 
-
+    //    QString *nresult = new QString("n:");
+    //    QString *cresult = new QString("c:");
+    //    for (int i=0;i<9;i++)
+    //    {
+    //        uint16_t check = nstate & bit[i];
+    //        if(check>0)
+    //        {
+    //            nresult->append(QString::number(i) + ",");
+    //        }
+    //        check = cstate & bit[i];
+    //        if(check>0)
+    //        {
+    //            cresult->append(QString::number(i) + ",");
+    //        }
+    //    }
+    //    turn->setText(*nresult + *cresult);
+    QString *nresult = new QString("c:");
     for (int i=0;i<9;i++)
     {
-        check &= win_state[i];
-        if (check == win_state[i])
+        uint16_t lcheck =check & win_state[i];
+
+        if (lcheck == win_state[i])
         {
 
             if(t==c_t)
             {
                 turn->setText("noughts won!");
+                gridDisconnect();
+                noughtwin++;
+                nscore->setText("Noughts score: " + QString::number(noughtwin));
             }
             else
             {
                 turn->setText("crosses won!");
+                gridDisconnect();
+                crosswin++;
+                cscore->setText("Crosses score: " + QString::number(crosswin));
             }
         }
     }
@@ -518,7 +551,14 @@ void GameOn::checkWin()
 
 }
 
-
+void GameOn::gridDisconnect(){
+    for(int l;l<9;l++)
+    {
+        int x = l/3;
+        int y = l%3;
+        grid[x][y]->disconnect();
+    }
+}
 void GameOn::back_click()
 {
 //    QString *nresult = new QString("n:");
@@ -561,9 +601,11 @@ void GameOn::newg_click()
         //Connect ClickableLabel clicked(int) SIGNAL() to gridClick(int) SLOT() handler in GameOn
         QObject::connect(grid[x][y],SIGNAL(clicked(int)),this,SLOT(gridClick(int)));
     }
-    nstate &= 0x00;
+    nstate &= 0x0000;
+    cstate &= 0x0000;
     t=n_t;
     clicks=0;
+    turn->setText("noughts turn!");
 }
 
 

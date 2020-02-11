@@ -1,7 +1,7 @@
 # noughtcross
 Noughts and Crosses game built in Qt framework
 
-Version: 0.8
+Version: 1.0
 Title: noughtscross
 Author: Glenn McConnell
 Last Update: 11/02/2020
@@ -33,3 +33,4 @@ Change Log:
         V0.7: Game Logic class
         V0.8: added gameplay, reduced responsibilities of Game Logic Class, encapsulated mainscreen layout
         V0.9: back and new game, horizontal win states functioning correctly
+        V1.0: Full game and button functionality, form design could use some tweaking to match supplied imatges

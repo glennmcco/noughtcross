@@ -41,8 +41,8 @@ private:
     uint16_t bit[9] = {0x8000,0x4000,0x2000,0x1000,0x0800,0x0400,0x0200,0x0100,0x0080};
 
     //gamestate flags
-    uint16_t nstate=0;
-    uint16_t cstate=0;
+    uint16_t nstate=0x0000;
+    uint16_t cstate=0x0000;
 //    GameLogic *GL;
 
     //variables for title screen
@@ -78,6 +78,7 @@ private:
     void buildGameLayout();
     void updateTurn();
     void showHome();
+    void gridDisconnect();
 
 private slots:
     void startgame();
