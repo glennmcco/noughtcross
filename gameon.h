@@ -34,7 +34,7 @@ private:
     int noughtwin;
     int crosswin;
     Turn t;
-    uint8_t won;
+    bool won;
     uint8_t clicks;
 
     //Win Condition Check values
@@ -43,7 +43,6 @@ private:
     //gamestate flags
     uint16_t nstate=0x0000;
     uint16_t cstate=0x0000;
-//    GameLogic *GL;
 
     //variables for title screen
     QWidget *mainscreen;
@@ -74,11 +73,10 @@ private:
     QPushButton *newg;
 
     //game methods
-    void checkWin();
     void buildGameLayout();
-    void updateTurn();
     void showHome();
     void gridDisconnect();
+    void checkWin();
 
 private slots:
     void startgame();

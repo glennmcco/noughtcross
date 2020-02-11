@@ -23,7 +23,7 @@ public:
 
 signals:
     void clicked(int p);
-    //void clicked();
+
 protected:
     void mousePressEvent(QMouseEvent* event);
 

@@ -13,12 +13,13 @@ ClickableLabel::~ClickableLabel()
 
 void ClickableLabel::mousePressEvent(QMouseEvent* event)
 {
+    //emit clicked with panel location of label
     emit clicked(panel);
-    //emit clicked();
 }
 
 void ClickableLabel::setPanel(int p)
 {
+    //panel location of label
     panel = p;
 }
 
