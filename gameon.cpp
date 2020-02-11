@@ -3,6 +3,8 @@
 #include "gameon.h"
 #include "ui_gameon.h"
 
+
+
 GameOn::GameOn(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::GameOn)
@@ -175,7 +177,7 @@ void GameOn::buildGameLayout()
 //                        );
 
      /*text label to display win state or current turn*/
-    turn = new QLabel("noughts turn!");
+    turn = new QLabel("crosses turn!");
 
     //Sets background colour and border to transparent and font style
     turn->setStyleSheet("background-color: rgba(0,0,0,0%);"
@@ -351,8 +353,9 @@ void GameOn::startgame()
     mainscreen->hide();
     gamescreen->show();
 
-    //set turn(t) to naughts turn(n_t) and won < 0
-    t=n_t;
+    //set start turn(st) and turn(t) to crosses turn(c_t) and won = false
+    st=c_t;
+    t=c_t;
     won=false;
 }
 
@@ -487,9 +490,14 @@ void GameOn::newg_click()
     nstate &= 0x0000;
     cstate &= 0x0000;
 
-    //set Turn(t) to noughts turn(n_t), reset clicks and set turn indicator
+    //set start turn to opposite of last game
+    if(st==c_t){st=n_t;
+        turn->setText("noughts turn!");}
+    else{st=c_t;
+        turn->setText("crosses turn!");}
+
+    //Ser turn(t) to noughts turn(n_t), reset clicks and set turn indicator
     t=n_t;
     clicks=0;
     won=false;
-    turn->setText("noughts turn!");
 }

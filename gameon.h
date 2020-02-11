@@ -33,6 +33,7 @@ private:
     //variables to track game state
     int noughtwin;
     int crosswin;
+    Turn st;
     Turn t;
     bool won;
     uint8_t clicks;
